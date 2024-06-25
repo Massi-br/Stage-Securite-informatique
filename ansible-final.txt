@@ -1,0 +1,158 @@
+---
+
+- name: post installation
+
+  hosts: myhosts
+
+  become: yes
+
+  
+
+  tasks:
+
+    - name: updating the cache
+
+      ansible.builtin.apt:
+
+        update_cache: yes
+
+        
+
+    - name: installing exegol packages requirements
+
+      ansible.builtin.package:
+
+        name: 
+
+          - git-all
+
+          - python3
+
+          - python3-pip
+
+        state: latest
+
+
+
+    - name: Attempt to fix broken dependencies
+
+      ansible.builtin.command: apt --fix-broken install -y
+
+      ignore_errors: yes
+
+        
+
+    - name: installing softwares
+
+      ansible.builtin.apt:
+
+        name: 
+
+          - gufw
+
+          - joplin
+
+          - usbguard
+
+          - keepassxc
+
+          - docker.io
+
+        state: latest
+
+        
+
+    - name: Activer et démarrer le service Docker
+
+      ansible.builtin.systemd:
+
+        name: docker
+
+        enabled: yes
+
+        state: started
+
+    
+
+    - name: Install Exegol
+
+      ansible.builtin.pip:
+
+        name: 
+
+          - exegol
+
+          - GitPython
+
+          - rich
+
+        state: latest
+
+        extra_args: "--ignore-installed rich"
+
+            
+
+    - name: Activer l'auto complétion pour Exegol
+
+      ansible.builtin.shell:
+
+        cmd: register-python-argcomplete --no-defaults exegol | sudo tee /etc/bash_completion.d/exegol > /dev/null
+
+        
+
+    - name: Ajouter Exegol dans la variable PATH
+
+      ansible.builtin.shell:
+
+        cmd: echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
+
+        
+
+    - name: vérifier l'instalation de exegol
+
+      ansible.builtin.shell:
+
+        cmd: exegol -h
+
+        
+
+    - name: Activer et démarrer le service SSH
+
+      ansible.builtin.systemd:
+
+        name: ssh
+
+        enabled: yes
+
+        state: started
+
+        
+
+    - name: Activer le pare-feu et autoriser le trafic SSH entrant
+
+      ansible.builtin.ufw:
+
+        rule: allow
+
+        name: SSH
+
+
+
+    - name: Activer le pare-feu
+
+      ansible.builtin.ufw: 
+
+        state: enabled
+
+        
+
+    - name: Activer le service USBGuard
+
+      ansible.builtin.systemd:
+
+        name: usbguard
+
+        enabled: yes
+
+        state: started     
+

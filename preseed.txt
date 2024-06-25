@@ -1,0 +1,176 @@
+### Localization & Keyboard selection.
+
+d-i debian-installer/locale string fr_FR
+
+d-i keyboard-configuration/xkb-keymap select fr(latin9)
+
+# d-i keyboard-configuration/toggle select No toggling
+
+
+
+### Network configuration
+
+d-i netcfg/enable boolean false
+
+
+
+### Mirror settings
+
+# Mirror protocol:
+
+d-i mirror/protocol string ftp
+
+d-i mirror/ftp/hostname string ftp.fr.kali.org
+
+d-i mirror/ftp/directory string /kali
+
+d-i mirror/ftp/proxy string
+
+
+
+### Account setup
+
+d-i passwd/root-login boolean false
+
+d-i passwd/user-fullname string torii
+
+d-i passwd/username string torii
+
+d-i passwd/user-password-crypted password $6$ybWstjnG3TiUp2mk$JRbHPYozKj09uzU0Ow72Q4VrLTAilRreJflMxA852ADAbyHvadh34sQbrtH3G4TSSuGhrIwdiqP11q9AChFG2.
+
+
+
+### Clock and time zone setup
+
+d-i clock-setup/utc boolean true
+
+d-i clock-setup/ntp boolean true
+
+d-i time/zone string Europe/Paris
+
+
+
+### Partitioning
+
+# Par exemple, pour utiliser le premier disque SCSI/SATA :
+
+d-i partman-auto/disk string /dev/sda
+
+
+
+# Utiliser la méthode de partitionnement régulière
+
+d-i partman-auto/method string regular
+
+d-i partman-lvm/device_remove_lvm boolean true
+
+d-i partman-md/device_remove_md boolean true
+
+
+
+# commande pour supprimer les partitions chiffrées
+
+d-i partman-crypto/erase_disks boolean true
+
+
+
+d-i partman-auto/expert_recipe string \
+
+    simple :: \
+
+        1024 1024 1024 ext4 \
+
+            $primary{ } \
+
+            $bootable{ } \
+
+            method{ format } \
+
+            format{ } \
+
+            use_filesystem{ } \
+
+            filesystem{ ext4 } \
+
+            mountpoint{ /boot } \
+
+        . \
+
+        1024 2048 4096 linux-swap \
+
+            method{ swap } \
+
+            format{ } \
+
+        . \
+
+        30000 40000 40000 ext4 \
+
+            method{ keep } \
+
+            format{ } \
+
+            mountpoint{ /home } \
+
+        . \
+
+        40000 210000 -1 ext4 \
+
+            method{ format } \
+
+            format{ } \
+
+            use_filesystem{ } \
+
+            filesystem{ ext4 } \
+
+            mountpoint{ / } \
+
+        .
+
+
+
+d-i partman-auto/init_automatically_partition select simple
+
+
+
+d-i partman/confirm_write_new_label boolean true
+
+d-i partman/choose_partition select finish
+
+d-i partman/confirm boolean true
+
+d-i partman/confirm_nooverwrite boolean true
+
+d-i partman/confirm_nochange boolean true
+
+
+
+### Package selection
+
+tasksel tasksel/first multiselect standard ssh-server desktop 
+
+d-i pkgsel/include string build-essential sudo kali-desktop-xfce kali-linux-default
+
+
+
+popularity-contest popularity-contest/participate boolean false
+
+
+
+### Boot loader installation
+
+d-i grub-installer/only_debian boolean true
+
+d-i grub-installer/bootdev string default
+
+
+
+
+
+### Finishing up the installation
+
+# Avoid that last message about the install being complete.
+
+d-i finish-install/reboot_in_progress note
+
