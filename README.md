@@ -15,7 +15,8 @@ Dans ce dépôt, vous trouverez :
 ```plaintext
 /
 ├── terraform/
-│   ├── main.tf
+│   ├── vagrant-pro.tf
+│   ├── Vagrantfile.txt
 ├── ansible/
 │   ├── playbook.yml
 ├── preseed/
